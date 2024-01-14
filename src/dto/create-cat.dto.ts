@@ -26,4 +26,9 @@ export class CreateCatDto {
   @MaxLength(500)
   @IsNotEmpty()
   readonly breed: string;
+
+  @IsString()
+  @MinLength(1)
+  @IsNotEmpty()
+  readonly ownerId: string;
 }
