@@ -14,7 +14,10 @@ export class CatsService {
   ) {}
 
   async createCat(createCatDto: CreateCatDto): Promise<Cat> {
-    const newCat = await new this.catModel(createCatDto);
+    const newCat = await new this.catModel({
+      ...createCatDto,
+      ownerId: createCatDto.ownerId,
+    });
     return newCat.save();
   }
 
@@ -34,7 +37,25 @@ export class CatsService {
   }
 
   async findOneCat(catId: string): Promise<Cat> {
-    const findOneCatById = await this.catModel.findById(catId).exec()
+    // .populate replacing the ownerId with all information of owner, like here:
+    /**
+        "message": "Cat document 65a41b7489c017e643dec340 has been found",
+    "getOneCatById": {
+        "_id": "65a41b7489c017e643dec340",
+        "name": "Nekomata",
+        "age": 10,
+        "breed": "Nekoshu",
+        "ownerId": {
+            "_id": "65a418677ef52745ccb381b8",
+            "lastName": "Shahoul",
+            "firstName": "Shaik",
+            "age": 25,
+            "__v": 0
+        },
+        "__v": 0
+    }
+     */
+    const findOneCatById = await this.catModel.findById(catId).populate('ownerId').exec()
 
     if (!findOneCatById) {
       throw new NotFoundException(`Document ${findOneCatById} not found`)
